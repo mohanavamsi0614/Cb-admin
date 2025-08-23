@@ -1,6 +1,9 @@
 import React, { useState } from "react";
+import { io } from "socket.io-client";
 
-function Attd({ team, onSubmitTeam }) {
+const socket = io("https://cb-kare-server.onrender.com");
+
+function Attd({ team }) {
   const imgClass =
     "aspect-square w-full h-auto object-cover rounded-2xl shadow-lg border-2 border-slate-600 bg-slate-700";
   const cardClass =
@@ -9,14 +12,14 @@ function Attd({ team, onSubmitTeam }) {
     "p-3 px-6 font-semibold rounded-lg shadow-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900";
   const attdLabels = ["First", "Second", "Third", "Fourth"];
 
-  // ✅ Track attendance for lead + members
   const [attendance, setAttendance] = useState({
+    id: team._id,
     lead: null,
-    members: team.members.map(() => null), // null = not marked, true = present, false = absent
+    members: team.members.map(() => null), 
   });
 
-  // ✅ Function to update attendance (and log immediately)
   const handleAttendance = (isLead, index, status) => {
+    // status should be boolean: true for present, false for absent
     setAttendance((prev) => {
       let updated;
       if (isLead) {
@@ -36,7 +39,11 @@ function Attd({ team, onSubmitTeam }) {
     });
   };
 
-  // ✅ Function to log attendance data
+  const handleSubmit = () => {
+    socket.emit("admin", attendance);
+    console.log(attendance);
+  };
+
   const logAttendance = () => {
     console.log("📌 Final Attendance for team:", team.teamName);
 
@@ -105,6 +112,7 @@ function Attd({ team, onSubmitTeam }) {
             </div>
 
             {/* Lead Buttons */}
+            {team.lead.firstAttdStatus ? <div>{team.lead.firstAttdStatus =="present" ? "Present ✅" : "Absent ❌"}</div> :
             <div className="flex gap-4 mt-2">
               <button
                 onClick={() => handleAttendance(true, null, true)}
@@ -133,7 +141,7 @@ function Attd({ team, onSubmitTeam }) {
                 Absent
               </button>
             </div>
-
+            }
             {/* ✅ Lead Status */}
             {attendance.lead !== null && (
               <p className="mt-2 text-sm font-medium text-gray-300">
@@ -183,6 +191,7 @@ function Attd({ team, onSubmitTeam }) {
               </div>
 
               {/* Member Buttons */}
+              {team.members[index].firstAttdStatus ? <div>{team.members[index].firstAttdStatus == "present" ? "Present ✅" : "Absent ❌"}</div> :
               <div className="flex gap-4 mt-2">
                 <button
                   onClick={() => handleAttendance(false, index, true)}
@@ -211,6 +220,7 @@ function Attd({ team, onSubmitTeam }) {
                   Absent
                 </button>
               </div>
+              }
 
               {/* ✅ Member Status */}
               {attendance.members[index] !== null && (
@@ -232,15 +242,20 @@ function Attd({ team, onSubmitTeam }) {
 
           {/* Submit Full Team */}
           <div className="mt-6">
+            {((attendance.lead === null) || attendance.members.some(a => a === null)) && (
+              <p className="mb-2 text-red-400 text-sm font-semibold text-center">Please mark attendance for all before submitting.</p>
+            )}
             <button
               onClick={() => {
-                logAttendance(); // ✅ print attendance in console
-                onSubmitTeam(team._id, attendance); // still send to parent if needed
+                logAttendance();
+                handleSubmit();
               }}
               className={
                 buttonClass +
-                " w-full bg-cyan-600 hover:bg-cyan-500 text-white focus:ring-cyan-500"
+                " w-full bg-cyan-600 hover:bg-cyan-500 text-white focus:ring-cyan-500" +
+                (((attendance.lead === null) || attendance.members.some(a => a === null)) ? " opacity-50 cursor-not-allowed" : "")
               }
+              disabled={(attendance.lead === null) || attendance.members.some(a => a === null)}
             >
               Submit Full Team
             </button>
