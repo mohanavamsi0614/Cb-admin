@@ -1,1 +1,0 @@
-export const api = "https://cb-kare-server-1.onrender.com";

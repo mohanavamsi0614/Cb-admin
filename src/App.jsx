@@ -2,6 +2,7 @@ import './App.css'
 import { Route, Routes } from 'react-router'
 import Attd from './Attd'
 import Home from './Home'
+import Game from './Game'
 
 function App() {
 
@@ -9,7 +10,7 @@ function App() {
     <Routes>
         <Route path="/" element={<Home />} />
       <Route path="/attd" element={<Attd />} />
-      {/* <Route path='/marks' element={<Marks />} /> */}
+      <Route path='/game' element={<Game />} />
     </Routes>
 
   )

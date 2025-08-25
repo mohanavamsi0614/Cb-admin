@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import axios from "axios";
-import { api } from "../api";
+import { api } from "./api";
 
 function Home() {
   const webcamRef = useRef(null);

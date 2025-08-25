@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Att from "./comp/Attd"; 
-import { api } from "../api";
+import { api } from "./api";
 
 function Attd() {
   const [teams, setTeams] = useState([]);
