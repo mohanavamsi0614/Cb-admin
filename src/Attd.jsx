@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Att from "./comp/Attd"; 
+import { api } from "../api";
 
 function Attd() {
   const [teams, setTeams] = useState([]);
@@ -8,7 +9,7 @@ function Attd() {
 
   useEffect(() => {
     axios
-      .get("https://cb-kare-server.onrender.com/event/teams")
+      .get(`${api}/event/teams`)
       .then((res) => {
         console.log(res.data);
         setTeams(res.data);

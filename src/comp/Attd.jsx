@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { io } from "socket.io-client";
+import { api } from "../../api";
 
-const socket = io("https://cb-kare-server.onrender.com");
+const socket = io(api);
 
 function Attd({ team }) {
   const imgClass =

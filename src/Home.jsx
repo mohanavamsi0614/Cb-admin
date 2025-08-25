@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import axios from "axios";
+import { api } from "../api";
 
 function Home() {
   const webcamRef = useRef(null);
@@ -13,7 +14,7 @@ function Home() {
   useEffect(() => {
     setLoading(true);
     axios
-      .get("https://cb-kare-server.onrender.com/genisis/testing")
+      .get(`${api}/genisis/testing`)
       .then((res) => {
         setteam(res.data);
         setLoading(false);
@@ -125,7 +126,7 @@ function Model({ mem, open, setOpen }) {
     console.log("Uploaded URL:", res.data.secure_url);
 
     await axios.post(
-      "https://cb-kare-server.onrender.com/genisis/attd/" +
+      `${api}/genisis/attd/` +
         mem.id +
         "/" +
         mem.name,
