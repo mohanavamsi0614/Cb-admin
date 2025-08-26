@@ -15,6 +15,7 @@ function Attd({ team }) {
 
   const [attendance, setAttendance] = useState({
     id: team._id,
+    name: team.teamName,
     lead: null,
     members: team.members.map(() => null), 
   });
@@ -251,12 +252,6 @@ function Attd({ team }) {
                 logAttendance();
                 handleSubmit();
               }}
-              className={
-                buttonClass +
-                " w-full bg-cyan-600 hover:bg-cyan-500 text-white focus:ring-cyan-500" +
-                (((attendance.lead === null) || attendance.members.some(a => a === null)) ? " opacity-50 cursor-not-allowed" : "")
-              }
-              disabled={(attendance.lead === null) || attendance.members.some(a => a === null)}
             >
               Submit Full Team
             </button>

@@ -11,8 +11,9 @@ function App() {
         <Route path="/" element={<Home />} />
       <Route path="/attd" element={<Attd />} />
       <Route path='/game' element={<Game />} />
+      {/* <Route path='/ps' element={} */}
     </Routes>
-
+  
   )
 }
 
