@@ -5,7 +5,7 @@ import { api } from "./api";
 
 function Attd() {
   const [teams, setTeams] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     axios
