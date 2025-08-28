@@ -4,6 +4,7 @@ function SecondRound() {
   const [teams, setTeams] = useState([]);
   const [currentTeamIndex, setCurrentTeamIndex] = useState(0);
   const [scores, setScores] = useState({});
+  const [errors, setErrors] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
 
   const round2Categories = [
@@ -12,35 +13,67 @@ function SecondRound() {
     "User Experience & Design",
     "Impact & Practicality",
     "Presentation & Communication",
-    "Completion & Effort"
+    "Completion & Effort",
   ];
 
+  const round2Ranges = {
+    "Implementation & Functionality": [0, 20],
+    "Innovation & Creative": [0, 15],
+    "User Experience & Design": [0, 15],
+    "Impact & Practicality": [0, 15],
+    "Presentation & Communication": [0, 10],
+    "Completion & Effort": [0, 10],
+  };
+
   useEffect(() => {
-    fetch("https://cb-kare-server-kk42.onrender.com/event/teams")
+    fetch("http://localhost:3001/event/teams")
       .then((res) => res.json())
       .then((data) => {
         setTeams(data);
 
         const initialScores = {};
+        const initialErrors = {};
         data.forEach((team) => {
           initialScores[team._id] = {
             round2: Array(round2Categories.length).fill(""),
           };
+          initialErrors[team._id] = {};
         });
         setScores(initialScores);
+        setErrors(initialErrors);
       })
       .catch((err) => console.error("Error fetching teams:", err));
   }, []);
 
-  const handleScoreChange = (round, index, value) => {
+  const handleScoreChange = (round, index, value, category, ranges) => {
+    const [min, max] = ranges[category];
+    let numericValue = Number(value);
     const teamId = teams[currentTeamIndex]._id;
+
+    let errorMessage = "";
+    if (value === "") {
+      numericValue = "";
+    } else if (isNaN(numericValue)) {
+      errorMessage = "Invalid number";
+    } else if (numericValue < min || numericValue > max) {
+      errorMessage = `Value must be between ${min} and ${max}`;
+    }
+
     setScores((prev) => ({
       ...prev,
       [teamId]: {
         ...prev[teamId],
         [round]: prev[teamId][round].map((s, i) =>
-          i === index ? Number(value) : s
+          i === index ? value : s
         ),
+      },
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [teamId]: {
+        ...(prev[teamId] || {}),
+        [`${round}-${index}`]: errorMessage,
       },
     }));
   };
@@ -50,24 +83,38 @@ function SecondRound() {
     return roundScores.reduce((sum, val) => sum + (Number(val) || 0), 0);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const teamId = teams[currentTeamIndex]._id;
+
+    const hasErrors = Object.values(errors[teamId] || {}).some((msg) => msg);
+    if (hasErrors) {
+      alert("Please fix validation errors before submitting.");
+      return;
+    }
+
     const teamScores = scores[teamId]?.round2 || [];
+    const total = calculateTotal(teamId);
 
-    console.log(`✅ Submitted scores for team: ${teams[currentTeamIndex].teamName}`);
-    console.log("------------");
+    try {
+      const res = await fetch(`http://localhost:3001/event/team/score/${teamId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          SecondReview: teamScores,
+          SecondScore: total,
+        }),
+      });
 
-    let total = 0;
-    teamScores.forEach((score, idx) => {
-      console.log(`${round2Categories[idx]} = ${score}`);
-      total += Number(score) || 0;
-    });
-
-    console.log("------------");
-    console.log(`Total = ${total}`);
-
-    // ✅ Popup after submission
-    alert(`Marks submitted for ${teams[currentTeamIndex].teamName}! 🎉`);
+      if (res.ok) {
+        alert(`Marks submitted for ${teams[currentTeamIndex].teamName}!`);
+      } else {
+        const errText = await res.text();
+        alert(`Error while submitting scores: ${errText}`);
+      }
+    } catch (err) {
+      console.error("Submission error:", err);
+      alert("Failed to submit scores. Check console.");
+    }
   };
 
   const handleNext = () => {
@@ -75,17 +122,6 @@ function SecondRound() {
       setCurrentTeamIndex(currentTeamIndex + 1);
     } else {
       alert("All teams completed!");
-    }
-  };
-
-  const handleSearch = () => {
-    const foundIndex = teams.findIndex((t) =>
-      t.teamName.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    if (foundIndex !== -1) {
-      setCurrentTeamIndex(foundIndex);
-    } else {
-      alert("Team not found!");
     }
   };
 
@@ -97,77 +133,93 @@ function SecondRound() {
   return (
     <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center p-6">
       <div className="w-full max-w-4xl bg-gray-800 rounded-2xl shadow-xl p-8">
-        {/* 🔍 Search bar */}
-        <div className="flex items-center gap-2 mb-6">
+        {/* 🔍 Search bar with dropdown */}
+        <div className="relative w-full mb-6">
           <input
             type="text"
             placeholder="Search team by name..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-            className="flex-1 p-2 rounded bg-gray-700 text-white focus:ring-2 focus:ring-blue-500"
+            className="w-full p-2 rounded bg-gray-700 text-white focus:ring-2 focus:ring-blue-500"
           />
-          <button
-            onClick={handleSearch}
-            className="bg-blue-600 px-4 py-2 rounded-lg font-semibold hover:bg-blue-700"
-          >
-            Go
-          </button>
+
+          {searchTerm && (
+            <ul className="absolute z-10 w-full bg-gray-800 border border-gray-600 rounded mt-1 max-h-40 overflow-y-auto">
+              {teams
+                .filter((t) =>
+                  t.teamName.toLowerCase().includes(searchTerm.toLowerCase())
+                )
+                .map((t) => (
+                  <li
+                    key={t._id}
+                    onClick={() => {
+                      const actualIndex = teams.findIndex(
+                        (team) => team._id === t._id
+                      );
+                      setCurrentTeamIndex(actualIndex);
+                      setSearchTerm("");
+                    }}
+                    className="p-2 cursor-pointer hover:bg-gray-700"
+                  >
+                    {t.teamName}
+                  </li>
+                ))}
+
+              {teams.filter((t) =>
+                t.teamName.toLowerCase().includes(searchTerm.toLowerCase())
+              ).length === 0 && (
+                <li className="p-2 text-gray-400">No team found</li>
+              )}
+            </ul>
+          )}
         </div>
 
         <h1 className="text-3xl font-bold text-center mb-6">{team.teamName}</h1>
-
-        {/* Team Lead */}
-        <div className="mb-4">
-          <h2 className="text-xl font-semibold">Team Lead</h2>
-          <p className="ml-4 font-medium">
-            {team.lead?.name}{" "}
-            <span className="text-gray-400">({team.lead?.email})</span>
-          </p>
-        </div>
-
-        {/* Members */}
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold">Members</h2>
-          <ul className="list-disc list-inside ml-6">
-            {team.members?.map((m, idx) => (
-              <li key={idx} className="mb-1">
-                <span className="font-medium">{m.name}</span>{" "}
-                <span className="text-gray-400">({m.email})</span>
-              </li>
-            ))}
-          </ul>
-        </div>
 
         {/* Round 2 */}
         <div className="mb-6">
           <h2 className="text-lg font-semibold mb-2">Round 2</h2>
           <div className="grid grid-cols-1 gap-3">
-            {scores[team._id]?.round2.map((val, idx) => (
-              <div key={idx}>
-                <label className="block text-gray-300 mb-1">
-                  {round2Categories[idx]}
-                </label>
-                <input
-                  type="number"
-                  placeholder={round2Categories[idx]}
-                  value={val}
-                  onChange={(e) =>
-                    handleScoreChange("round2", idx, e.target.value)
-                  }
-                  className="w-full p-2 rounded bg-gray-700 text-white focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            ))}
+            {scores[team._id]?.round2.map((val, idx) => {
+              const category = round2Categories[idx];
+              const [min, max] = round2Ranges[category];
+              const errorMsg = errors[team._id]?.[`round2-${idx}`];
+
+              return (
+                <div key={idx} className="mb-3">
+                  <label className="block text-gray-300 mb-1">
+                    {category} (Range: {min}-{max})
+                  </label>
+                  <input
+                    type="number"
+                    placeholder={category}
+                    value={val}
+                    onChange={(e) =>
+                      handleScoreChange(
+                        "round2",
+                        idx,
+                        e.target.value,
+                        category,
+                        round2Ranges
+                      )
+                    }
+                    className={`w-full p-2 rounded bg-gray-700 text-white focus:ring-2 ${
+                      errorMsg ? "ring-red-500" : "focus:ring-blue-500"
+                    }`}
+                  />
+                  {errorMsg && (
+                    <p className="text-red-400 text-sm mt-1">{errorMsg}</p>
+                  )}
+                </div>
+              );
+            })}
           </div>
 
-          {/* 🔢 Total Score Display */}
           <div className="mt-4 p-3 bg-gray-700 rounded-lg text-lg font-semibold text-center">
             Total Score: {calculateTotal(team._id)}
           </div>
         </div>
 
-        {/* Buttons */}
         <div className="flex justify-between mt-6">
           <button
             onClick={handleSubmit}

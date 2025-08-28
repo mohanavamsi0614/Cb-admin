@@ -12,7 +12,7 @@ function Home() {
   const [open,setOpen]=useState(false)
   useEffect(()=>{
     setLoading(true)
-    axios.get("https://cb-kare-server.onrender.com/genisis/testing").then((res)=>{
+    axios.get("http://localhost:3001/genisis/68506").then((res)=>{
       setteam(res.data)
       setLoading(false)
     })
