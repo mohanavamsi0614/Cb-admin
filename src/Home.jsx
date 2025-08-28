@@ -11,7 +11,7 @@ function Home() {
   const [open,setOpen]=useState(false)
   useEffect(()=>{
     setLoading(true)
-    axios.get("https://cb-kare-server.onrender.com/genisis/testing").then((res)=>{
+    axios.get("https://cb-kare-server-kk42.onrender.com/event/teams").then((res)=>{
       setteam(res.data)
       setLoading(false)
     })

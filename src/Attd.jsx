@@ -8,7 +8,7 @@ function Attd() {
 
   useEffect(() => {
     axios
-      .get("https://cb-kare-server.onrender.com/event/teams")
+      .get("https://cb-kare-server-kk42.onrender.com/event/teams")
       .then((res) => {
         console.log(res.data);
         setTeams(res.data);
