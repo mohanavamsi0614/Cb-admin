@@ -135,7 +135,7 @@ function FirstRound() {
   const team = teams[currentTeamIndex];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white flex items-center justify-center p-6 rounded-4xl shadow-6xl">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white flex items-center justify-center p-6">
       <div className="w-full max-w-4xl bg-gray-800/90 rounded-2xl shadow-2xl p-8 backdrop-blur">
         {/* Search bar */}
         <div className="relative w-full mb-6">
