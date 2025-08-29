@@ -10,7 +10,7 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/attd" element={<Attd />} />
+      <Route path="/attendance" element={<Attd />} />
       { <Route path='/marks' element={<Game />} /> }
       <Route path='/firstRound' element={<FirstRound/>}/>
       <Route path='/secondRound' element={<SecondRound/>}/>
