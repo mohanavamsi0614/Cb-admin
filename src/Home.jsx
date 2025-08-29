@@ -5,16 +5,16 @@ function Home() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
-      <h1 className="text-4xl font-extrabold mb-10 tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white">
+      <h1 className="text-4xl font-extrabold mb-10 tracking-wide">
         Dashboard
       </h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div className="flex flex-col sm:flex-row gap-6">
         {/* Round 1 */}
         <button
           onClick={() => navigate("/firstround")}
-          className="px-10 py-6 rounded-2xl shadow-lg bg-blue-600 hover:bg-blue-700 transition transform hover:scale-105 text-xl font-semibold"
+          className="px-10 py-6 rounded-2xl shadow-md bg-blue-600 hover:bg-blue-700 transition transform hover:scale-105 text-xl font-semibold text-white"
         >
           Round 1
         </button>
@@ -22,9 +22,17 @@ function Home() {
         {/* Round 2 */}
         <button
           onClick={() => navigate("/secondround")}
-          className="px-10 py-6 rounded-2xl shadow-lg bg-purple-600 hover:bg-purple-700 transition transform hover:scale-105 text-xl font-semibold"
+          className="px-10 py-6 rounded-2xl shadow-md bg-purple-600 hover:bg-purple-700 transition transform hover:scale-105 text-xl font-semibold text-white"
         >
           Round 2
+        </button>
+
+        {/* Attendance */}
+        <button
+          onClick={() => navigate("/attd")}
+          className="px-10 py-6 rounded-2xl shadow-md bg-green-600 hover:bg-green-700 transition transform hover:scale-105 text-xl font-semibold text-white"
+        >
+          Attendance
         </button>
       </div>
     </div>
