@@ -1,7 +1,7 @@
 import axios from "axios";
 import { api } from "./api";
 import { useEffect, useState } from "react";
-import Gamec from "./comp/Game";
+import Gamecard from "./comp/GameCard";
 
 function Game(){
     const [teams, setTeams] = useState([]);
@@ -16,7 +16,8 @@ function Game(){
             <h1 className="text-4xl font-extrabold text-indigo-700 mb-10 text-center drop-shadow">Leaderboard Teams</h1>
             <div className="w-full  flex  gap-2 flex-wrap">
                 {teams.map((team) => (
-                    <Gamec key={team._id} team={team} />
+                    <Gamecard key={team._id} team={team} />
+                    // console.log(team)
                 ))}
             </div>
         </div>

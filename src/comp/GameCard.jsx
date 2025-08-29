@@ -2,12 +2,14 @@ import { useState } from "react";
 import { io } from "socket.io-client";
 import { api } from "../api";
 const socket=io(api);
-function Game({team}){
+function GameCard({team}){
     const [markedScore, setMarkedScore] = useState();
+    console.log(team)
     const handlemarks=()=>{
         console.log("doihqoi")
         socket.emit("leaderboard", { teamname: team.teamName, HuntScore: markedScore });
     }
+
     return(
         <div className="max-w-md mx-auto mt-12 p-8 bg-gradient-to-br from-blue-100 via-cyan-50 to-indigo-100 rounded-3xl shadow-2xl border border-blue-300">
             <h1 className="text-3xl font-bold text-indigo-700 mb-2 text-center">{team.teamName}</h1>
@@ -30,4 +32,4 @@ function Game({team}){
         </div>
     )
 }
-export default Game;
+export default GameCard;

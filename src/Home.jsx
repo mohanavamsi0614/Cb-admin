@@ -34,6 +34,20 @@ function Home() {
         >
           Attendance
         </button>
+        
+        <button
+          onClick={() => navigate("/game")}
+          className="px-10 py-6 rounded-2xl shadow-md bg-green-600 hover:bg-green-700 transition transform hover:scale-105 text-xl font-semibold text-white"
+        >
+          Game
+        </button>
+        
+        <button
+          onClick={() => navigate("/eventupdates")}
+          className="px-10 py-6 rounded-2xl shadow-md bg-green-600 hover:bg-green-700 transition transform hover:scale-105 text-xl font-semibold text-white"
+        >
+          Event Updates
+        </button>
       </div>
     </div>
   );

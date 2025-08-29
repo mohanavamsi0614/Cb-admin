@@ -56,7 +56,9 @@ function Attd() {
           <button
             key={btn.value}
             onClick={() => handlecurrAttd(btn.value)}
-            className="px-6 py-2 rounded-2xl border-2 text-white bg-black"
+            className={`px-6 py-2 rounded-2xl border-2 text-white bg-black ${
+              currAttd === btn.value ? "border-blue-500" : "border-gray-600"
+            }`}
           >
             {btn.label}
           </button>
@@ -66,13 +68,17 @@ function Attd() {
       <div className="flex flex-wrap justify-center gap-6 mb-12">
         <button
           onClick={() => setSelectedBlock(8)}
-          className="px-6 py-2 rounded-2xl border-2 text-white bg-black"
+           className={`px-6 py-2 rounded-2xl border-2 text-white bg-black ${
+            selectedBlock === 8 ? "border-blue-500" : "border-gray-600"
+          }`}
         >
           8th Block
         </button>
         <button
           onClick={() => setSelectedBlock(9)}
-          className="px-6 py-2 rounded-2xl border-2 text-white bg-black"
+           className={`px-6 py-2 rounded-2xl border-2 text-white bg-black ${
+            selectedBlock === 9 ? "border-blue-500" : "border-gray-600"
+          }`}
         >
           9th Block
         </button>
