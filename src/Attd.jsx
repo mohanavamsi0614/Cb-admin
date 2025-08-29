@@ -9,6 +9,7 @@ function Attd() {
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currAttd, setCurrAttd] = useState(0);
+  const [selectedBlock, setSelectedBlock] = useState(null);
 
   useEffect(() => {
     axios
@@ -27,6 +28,14 @@ function Attd() {
         setCurrAttd(num);
       });
   }, []);
+  
+    // 👉 Filter teams based on selected block
+  let filteredTeams = teams;
+  if (selectedBlock === 8) {
+    filteredTeams = teams.slice(0, 41); // 1st 41 teams
+  } else if (selectedBlock === 9) {
+    filteredTeams = teams.slice(41, 81); // last 40 teams
+  }
   
   const handlecurrAttd=(num)=>{
     socket.emit("currAttd",num);
@@ -53,13 +62,29 @@ function Attd() {
           </button>
         ))}
       </div>
+
+      <div className="flex flex-wrap justify-center gap-6 mb-12">
+        <button
+          onClick={() => setSelectedBlock(8)}
+          className="px-6 py-2 rounded-2xl border-2 text-white bg-black"
+        >
+          8th Block
+        </button>
+        <button
+          onClick={() => setSelectedBlock(9)}
+          className="px-6 py-2 rounded-2xl border-2 text-white bg-black"
+        >
+          9th Block
+        </button>
+      </div>
+
       {loading ? (
         <div className="text-center text-lg font-semibold text-cyan-300 animate-pulse">Loading teams...</div>
-      ) : teams.length === 0 ? (
+      ) : filteredTeams.length === 0 ? (
         <div className="text-center text-lg font-semibold text-red-400">No teams available.</div>
       ) : (
         <div className="flex flex-col gap-10 max-w-4xl w-full mx-auto">
-          {teams.map((team, index) => (
+          {filteredTeams.map((team, index) => (
             <div key={index} className="bg-white rounded-3xl shadow-2xl p-6 border border-black">
               <Att team={team} onSubmitTeam={handleTeamSubmit} />
             </div>
