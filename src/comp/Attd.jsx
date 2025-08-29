@@ -6,9 +6,9 @@ const socket = io(api);
 
 function Attd({ team }) {
   const imgClass =
-    "aspect-square w-full h-auto object-cover rounded-2xl shadow-lg border-2 border-slate-600 bg-slate-700";
+    "aspect-square w-full h-auto object-cover rounded-2xl shadow-lg border-2 border-black bg-slate-700";
   const cardClass =
-    "border rounded-xl p-4 bg-slate-900/60 border-slate-700 shadow-md";
+    "border rounded-xl p-4 bg-white border-slate-700 shadow-md";
   const buttonClass =
     "p-3 px-6 font-semibold rounded-lg shadow-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900";
   const attdLabels = ["First", "Second", "Third", "Fourth"];
@@ -61,15 +61,15 @@ function Attd({ team }) {
 
  
   return (
-    <div className="bg-slate-800/50 border border-slate-700 p-6 rounded-2xl shadow-lg transition-all duration-300 hover:border-cyan-500/50 hover:bg-slate-800">
+    <div className=" border border-black p-6 rounded-2xl ">
       <details>
-        <summary className="font-bold text-2xl text-cyan-300 cursor-pointer hover:text-cyan-200 transition-colors duration-300">
+        <summary className="font-bold text-2xl text-black cursor-pointer">
           {team.teamName}
         </summary>
         <div className="p-4 flex flex-col gap-6">
           {/* Lead Card */}
           <div className={cardClass}>
-            <b className="text-lg text-white drop-shadow mb-2 block">
+            <b className="text-lg text-black mb-2 block">
               {team.lead.name}
             </b>
 
@@ -80,7 +80,7 @@ function Attd({ team }) {
                     key={attdLabels[idx]}
                     className="flex flex-col items-center"
                   >
-                    <span className="text-xs text-gray-400 mb-1 font-medium">
+                    <span className="text-xs text-black mb-1 font-medium">
                       {attdLabels[idx]} Attendance
                     </span>
                     {img ? (
@@ -90,7 +90,7 @@ function Attd({ team }) {
                         alt={attdLabels[idx]}
                       />
                     ) : (
-                      <div className="flex items-center justify-center w-full h-full aspect-square bg-slate-700 rounded-2xl">
+                      <div className="flex items-center justify-center w-full h-full aspect-square bg-white border border-black rounded-2xl">
                         <span className="text-gray-500 text-sm">No Image</span>
                       </div>
                     )}
@@ -148,7 +148,7 @@ function Attd({ team }) {
           {/* Members */}
           {team.members.map((member, index) => (
             <div key={index} className={cardClass + " mt-2"}>
-              <b className="text-lg text-gray-300 drop-shadow mb-2 block">
+              <b className="text-lg text-black mb-2 block">
                 {member.name}
               </b>
 
@@ -159,7 +159,7 @@ function Attd({ team }) {
                       key={attdLabels[idx]}
                       className="flex flex-col items-center"
                     >
-                      <span className="text-xs text-gray-400 mb-1 font-medium">
+                      <span className="text-xs text-black mb-1 font-medium">
                         {attdLabels[idx]} Attendance
                       </span>
                       {img ? (
@@ -169,7 +169,7 @@ function Attd({ team }) {
                           alt={attdLabels[idx]}
                         />
                       ) : (
-                        <div className="flex items-center justify-center w-full h-full aspect-square bg-slate-700 rounded-2xl">
+                        <div className="flex items-center justify-center w-full h-full aspect-square bg-white border border-black rounded-2xl">
                           <span className="text-gray-500 text-sm">No Image</span>
                         </div>
                       )}
@@ -238,7 +238,7 @@ function Attd({ team }) {
               disabled={((attendance.lead === null) || attendance.members.some(a => a === null) || submitted)}
               className={
                 buttonClass +
-                " w-full max-w-xs bg-cyan-700 hover:bg-cyan-600 text-white focus:ring-cyan-500 mt-2" +
+                " w-full max-w-xs bg-black hover:bg-white text-white hover:text-black border hover:border-black mt-2" +
                 (submitted ? " opacity-60 cursor-not-allowed" : "")
               }
             >
