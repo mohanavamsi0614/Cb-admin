@@ -124,6 +124,14 @@ function FirstRound() {
       alert("All teams completed!");
     }
   };
+  
+  const handleBack = () => {
+    if (currentTeamIndex > 0) {
+      setCurrentTeamIndex(currentTeamIndex - 1);
+    } else {
+      alert("You're at the first team!");
+    }
+  };
 
   if (teams.length === 0)
     return (
@@ -229,6 +237,12 @@ function FirstRound() {
 
         {/* Buttons */}
         <div className="flex justify-between mt-8">
+          <button
+            onClick={handleBack}
+            className='px-6 py-3 bg-gray-600 hover:bg-gray-700 rounded-xl shadow-lg font-semibold transition transform hover:scale-105'
+          >
+            ← Back
+          </button>
           <button
             onClick={handleSubmit}
             className="px-6 py-3 bg-green-600 hover:bg-green-700 rounded-xl shadow-lg font-semibold transition transform hover:scale-105"
