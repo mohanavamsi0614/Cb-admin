@@ -37,18 +37,17 @@ function Attd() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-800 to-cyan-900 text-gray-200 py-10 px-2 font-sans flex flex-col items-center">
-      <h1>{currAttd}</h1>
-      <h1 className="text-5xl font-extrabold text-center mb-12 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400 animate-pulse drop-shadow-2xl">
-        <span className="inline-block animate-bounce">📋</span> Attendance Dashboard
+    <div className="min-h-screen bg-[url('./assets/try.svg')] bg-white py-10 px-2 font-sans flex flex-col items-center">
+      <h1 className="text-black">{currAttd}</h1>
+      <h1 className="text-5xl font-extrabold text-center mb-12 text-black">
+        Attendance Dashboard
       </h1>
       <div className="flex flex-wrap justify-center gap-6 mb-12">
         {[{label: "close", value: 0}, {label: "1", value: 1}, {label: "2", value: 2}, {label: "3", value: 3}, {label: "4", value: 4}].map(btn => (
           <button
             key={btn.value}
             onClick={() => handlecurrAttd(btn.value)}
-            className="px-7 py-3 rounded-2xl border-2 border-blue-400 bg-gradient-to-r from-blue-500 via-cyan-400 to-indigo-500 text-white font-bold shadow-lg hover:scale-110 hover:shadow-cyan-400/40 focus:outline-none focus:ring-4 focus:ring-cyan-400 transition-all duration-300 backdrop-blur-md"
-            style={{boxShadow: '0 0 16px 2px #22d3ee88'}}
+            className="px-6 py-2 rounded-2xl border-2 text-white bg-black"
           >
             {btn.label}
           </button>
@@ -61,7 +60,7 @@ function Attd() {
       ) : (
         <div className="flex flex-col gap-10 max-w-4xl w-full mx-auto">
           {teams.map((team, index) => (
-            <div key={index} className="bg-slate-900/60 rounded-3xl shadow-2xl p-6 border border-cyan-500/30 hover:border-cyan-400 hover:shadow-cyan-400/30 transition-all duration-300 backdrop-blur-lg">
+            <div key={index} className="bg-white rounded-3xl shadow-2xl p-6 border border-black">
               <Att team={team} onSubmitTeam={handleTeamSubmit} />
             </div>
           ))}
