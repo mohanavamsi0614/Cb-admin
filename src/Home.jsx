@@ -29,7 +29,7 @@ function Home() {
 
         {/* Attendance */}
         <button
-          onClick={() => navigate("/attd")}
+          onClick={() => navigate("/attendance")}
           className="px-10 py-6 rounded-2xl shadow-md bg-green-600 hover:bg-green-700 transition transform hover:scale-105 text-xl font-semibold text-white"
         >
           Attendance
