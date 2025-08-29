@@ -26,7 +26,7 @@ function SecondRound() {
   };
 
   useEffect(() => {
-    fetch("http://localhost:3001/event/teams")
+    fetch("https://cb-kare-server-1.onrender.com/event/teams")
       .then((res) => res.json())
       .then((data) => {
         setTeams(data);
@@ -97,7 +97,7 @@ function SecondRound() {
 
     try {
       const res = await fetch(
-        `http://localhost:3001/event/team/score/${teamId}`,
+        `https://cb-kare-server-1.onrender.com/event/team/score/${teamId}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
