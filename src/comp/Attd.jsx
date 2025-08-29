@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { api } from "../api";
 
@@ -12,6 +12,7 @@ function Attd({ team }) {
   const buttonClass =
     "p-3 px-6 font-semibold rounded-lg shadow-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900";
   const attdLabels = ["First", "Second", "Third", "Fourth"];
+    const [attendances, setAttendances] = useState(["firstAttd", "secondAttd", "thirdAttd", "fourthAttd"]);
 
   const [attendance, setAttendance] = useState({
     id: team._id,
@@ -19,6 +20,7 @@ function Attd({ team }) {
     lead: null,
     members: team.members.map(() => null), 
   });
+  const [currAttd, setCurrAttd] = useState(0);
 
   const handleAttendance = (isLead, index, status) => {
     // status should be boolean: true for present, false for absent
@@ -41,39 +43,23 @@ function Attd({ team }) {
     });
   };
 
+  const [submitted, setSubmitted] = useState(false);
   const handleSubmit = () => {
     socket.emit("admin", attendance);
     console.log(attendance);
+    setSubmitted(true);
   };
 
-  const logAttendance = () => {
-    console.log("📌 Final Attendance for team:", team.teamName);
-
-    // Lead
-    console.log(
-      `Lead: ${team.lead.name} -> ${
-        attendance.lead === null
-          ? "Not Marked"
-          : attendance.lead
-          ? "Present ✅"
-          : "Absent ❌"
-      }`
-    );
-
-    // Members
-    team.members.forEach((member, i) => {
-      console.log(
-        `${member.name} -> ${
-          attendance.members[i] === null
-            ? "Not Marked"
-            : attendance.members[i]
-            ? "Present ✅"
-            : "Absent ❌"
-        }`
-      );
+  useEffect(() => {
+    socket.emit("getCurrAttd")
+    socket.on("currAttd", (num) => {
+      setCurrAttd(num);
     });
-  };
 
+  },[])
+
+
+ 
   return (
     <div className="bg-slate-800/50 border border-slate-700 p-6 rounded-2xl shadow-lg transition-all duration-300 hover:border-cyan-500/50 hover:bg-slate-800">
       <details>
@@ -114,7 +100,7 @@ function Attd({ team }) {
             </div>
 
             {/* Lead Buttons */}
-            {team.lead.firstAttdStatus ? <div>{team.lead.firstAttdStatus =="present" ? "Present ✅" : "Absent ❌"}</div> :
+            {team.lead[attendances[currAttd-1]+"Status"] ? <div>{team.lead[attendances[currAttd-1]+"Status"] =="present" ? "Present ✅" : "Absent ❌"}</div> :
             <div className="flex gap-4 mt-2">
               <button
                 onClick={() => handleAttendance(true, null, true)}
@@ -193,7 +179,7 @@ function Attd({ team }) {
               </div>
 
               {/* Member Buttons */}
-              {team.members[index].firstAttdStatus ? <div>{team.members[index].firstAttdStatus == "present" ? "Present ✅" : "Absent ❌"}</div> :
+              {team.members[index][attendances[currAttd-1]+"Status"] ? <div>{team.members[index][attendances[currAttd-1]+"Status"] == "present" ? "Present ✅" : "Absent ❌"}</div> :
               <div className="flex gap-4 mt-2">
                 <button
                   onClick={() => handleAttendance(false, index, true)}
@@ -243,17 +229,20 @@ function Attd({ team }) {
           ))}
 
           {/* Submit Full Team */}
-          <div className="mt-6">
-            {((attendance.lead === null) || attendance.members.some(a => a === null)) && (
+          <div className="mt-6 flex flex-col items-center">
+            {((attendance.lead === null) || attendance.members.some(a => a === null)) && !submitted && (
               <p className="mb-2 text-red-400 text-sm font-semibold text-center">Please mark attendance for all before submitting.</p>
             )}
             <button
-              onClick={() => {
-                logAttendance();
-                handleSubmit();
-              }}
+              onClick={handleSubmit}
+              disabled={((attendance.lead === null) || attendance.members.some(a => a === null) || submitted)}
+              className={
+                buttonClass +
+                " w-full max-w-xs bg-cyan-700 hover:bg-cyan-600 text-white focus:ring-cyan-500 mt-2" +
+                (submitted ? " opacity-60 cursor-not-allowed" : "")
+              }
             >
-              Submit Full Team
+              {submitted ? "Submitted ✅" : "Submit Full Team"}
             </button>
           </div>
         </div>
