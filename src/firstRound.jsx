@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { api } from "./api";
 
 function FirstRound() {
   const [teams, setTeams] = useState([]);
@@ -22,7 +23,7 @@ function FirstRound() {
   };
 
   useEffect(() => {
-    fetch("https://cb-kare-server-1.onrender.com/event/teams")
+    fetch(`${api}/event/teams`)
       .then((res) => res.json())
       .then((data) => {
         setTeams(data);
@@ -93,7 +94,7 @@ function FirstRound() {
 
     try {
       const res = await fetch(
-        `https://cb-kare-server-1.onrender.com/event/team/score/${teamId}`,
+        `${api}/event/team/score/${teamId}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

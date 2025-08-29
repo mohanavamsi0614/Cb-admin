@@ -3,6 +3,11 @@ import { useNavigate } from "react-router-dom";
 
 function Home() {
   const navigate = useNavigate();
+  
+    const handleLogout = () => {
+    localStorage.removeItem('role');
+    window.location.reload()
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white">
@@ -48,6 +53,13 @@ function Home() {
         >
           Event Updates
         </button>
+        
+      <button
+        onClick={handleLogout}
+        className="px-10 py-4 rounded-2xl border border-white hover:bg-white hover:text-black transition text-xl font-semibold"
+      >
+        Logout
+      </button>
       </div>
     </div>
   );
