@@ -96,14 +96,17 @@ function SecondRound() {
     const total = calculateTotal(teamId);
 
     try {
-      const res = await fetch(`http://localhost:3001/event/team/score/${teamId}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          SecondReview: teamScores,
-          SecondScore: total,
-        }),
-      });
+      const res = await fetch(
+        `http://localhost:3001/event/team/score/${teamId}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            SecondReview: teamScores,
+            SecondScore: total,
+          }),
+        }
+      );
 
       if (res.ok) {
         alert(`Marks submitted for ${teams[currentTeamIndex].teamName}!`);
@@ -126,25 +129,28 @@ function SecondRound() {
   };
 
   if (teams.length === 0)
-    return <p className="text-center text-lg">Loading teams...</p>;
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-900 text-white">
+        <p className="text-lg animate-pulse">Loading teams...</p>
+      </div>
+    );
 
   const team = teams[currentTeamIndex];
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center p-6">
-      <div className="w-full max-w-4xl bg-gray-800 rounded-2xl shadow-xl p-8">
-        {/* 🔍 Search bar with dropdown */}
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white flex items-center justify-center p-6">
+      <div className="w-full max-w-4xl bg-gray-800/90 rounded-2xl shadow-2xl p-8 backdrop-blur">
+        {/* 🔍 Search bar */}
         <div className="relative w-full mb-6">
           <input
             type="text"
             placeholder="Search team by name..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full p-2 rounded bg-gray-700 text-white focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 rounded-xl bg-gray-700 text-white focus:ring-2 focus:ring-purple-500 placeholder-gray-400"
           />
-
           {searchTerm && (
-            <ul className="absolute z-10 w-full bg-gray-800 border border-gray-600 rounded mt-1 max-h-40 overflow-y-auto">
+            <ul className="absolute z-10 w-full bg-gray-800 border border-gray-700 rounded-lg mt-2 max-h-40 overflow-y-auto">
               {teams
                 .filter((t) =>
                   t.teamName.toLowerCase().includes(searchTerm.toLowerCase())
@@ -159,7 +165,7 @@ function SecondRound() {
                       setCurrentTeamIndex(actualIndex);
                       setSearchTerm("");
                     }}
-                    className="p-2 cursor-pointer hover:bg-gray-700"
+                    className="p-2 cursor-pointer hover:bg-gray-700 transition"
                   >
                     {t.teamName}
                   </li>
@@ -174,62 +180,70 @@ function SecondRound() {
           )}
         </div>
 
-        <h1 className="text-3xl font-bold text-center mb-6">{team.teamName}</h1>
+        {/* Team Name + Lead */}
+        <h1 className="text-4xl font-bold text-center mb-2 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
+          {team.teamName}
+        </h1>
+        <p className="text-center text-lg text-gray-300 mb-6">
+          Lead:{" "}
+          <span className="font-semibold text-white">
+            {team.lead?.name}
+          </span>
+        </p>
 
-        {/* Round 2 */}
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold mb-2">Round 2</h2>
-          <div className="grid grid-cols-1 gap-3">
-            {scores[team._id]?.round2.map((val, idx) => {
-              const category = round2Categories[idx];
-              const [min, max] = round2Ranges[category];
-              const errorMsg = errors[team._id]?.[`round2-${idx}`];
+        {/* Round 2 scoring */}
+        <div className="space-y-5">
+          {scores[team._id]?.round2.map((val, idx) => {
+            const category = round2Categories[idx];
+            const [min, max] = round2Ranges[category];
+            const errorMsg = errors[team._id]?.[`round2-${idx}`];
 
-              return (
-                <div key={idx} className="mb-3">
-                  <label className="block text-gray-300 mb-1">
-                    {category} (Range: {min}-{max})
-                  </label>
-                  <input
-                    type="number"
-                    placeholder={category}
-                    value={val}
-                    onChange={(e) =>
-                      handleScoreChange(
-                        "round2",
-                        idx,
-                        e.target.value,
-                        category,
-                        round2Ranges
-                      )
-                    }
-                    className={`w-full p-2 rounded bg-gray-700 text-white focus:ring-2 ${
-                      errorMsg ? "ring-red-500" : "focus:ring-blue-500"
-                    }`}
-                  />
-                  {errorMsg && (
-                    <p className="text-red-400 text-sm mt-1">{errorMsg}</p>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="mt-4 p-3 bg-gray-700 rounded-lg text-lg font-semibold text-center">
-            Total Score: {calculateTotal(team._id)}
-          </div>
+            return (
+              <div key={idx}>
+                <label className="block text-gray-300 mb-1 font-medium">
+                  {category}{" "}
+                  <span className="text-gray-400">(Range: {min}-{max})</span>
+                </label>
+                <input
+                  type="number"
+                  value={val}
+                  onChange={(e) =>
+                    handleScoreChange(
+                      "round2",
+                      idx,
+                      e.target.value,
+                      category,
+                      round2Ranges
+                    )
+                  }
+                  className={`w-full p-3 rounded-lg bg-gray-700 text-white focus:ring-2 ${
+                    errorMsg ? "ring-red-500" : "focus:ring-purple-500"
+                  }`}
+                />
+                {errorMsg && (
+                  <p className="text-red-400 text-sm mt-1">{errorMsg}</p>
+                )}
+              </div>
+            );
+          })}
         </div>
 
-        <div className="flex justify-between mt-6">
+        {/* Total */}
+        <div className="mt-6 p-4 bg-gray-700 rounded-xl text-lg font-semibold text-center shadow-md">
+          Total Score: {calculateTotal(team._id)}
+        </div>
+
+        {/* Buttons */}
+        <div className="flex justify-between mt-8">
           <button
             onClick={handleSubmit}
-            className="bg-green-600 px-6 py-2 rounded-lg font-semibold hover:bg-green-700"
+            className="px-6 py-3 bg-green-600 hover:bg-green-700 rounded-xl shadow-lg font-semibold transition transform hover:scale-105"
           >
             Submit
           </button>
           <button
             onClick={handleNext}
-            className="bg-blue-600 px-6 py-2 rounded-lg font-semibold hover:bg-blue-700"
+            className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-xl shadow-lg font-semibold transition transform hover:scale-105"
           >
             Next Team →
           </button>
