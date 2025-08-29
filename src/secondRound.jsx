@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { api } from "./api";
+import { ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 function SecondRound() {
+  const navigate = useNavigate();
   const [teams, setTeams] = useState([]);
   const [currentTeamIndex, setCurrentTeamIndex] = useState(0);
   const [scores, setScores] = useState({});
@@ -26,26 +29,36 @@ function SecondRound() {
     "Completion & Effort": [0, 10],
   };
 
+  // Fetch Teams
   useEffect(() => {
     fetch(`${api}/event/teams`)
       .then((res) => res.json())
       .then((data) => {
-        setTeams(data);
+      setTeams(data);
 
-        const initialScores = {};
-        const initialErrors = {};
-        data.forEach((team) => {
-          initialScores[team._id] = {
-            round2: Array(round2Categories.length).fill(""),
-          };
-          initialErrors[team._id] = {};
-        });
-        setScores(initialScores);
-        setErrors(initialErrors);
+      const initialScores = {};
+      const initialErrors = {};
+
+
+      data.forEach((team) => {
+      const existingRound2 =
+      team.SecondReview && Array.isArray(team.SecondReview)
+      ? team.SecondReview
+      : Array(round2Categories.length).fill(0);
+
+
+      initialScores[team._id] = { round2: existingRound2 };
+      initialErrors[team._id] = {};
+      });
+
+
+      setScores(initialScores);
+      setErrors(initialErrors);
       })
       .catch((err) => console.error("Error fetching teams:", err));
-  }, []);
+    }, []);
 
+  // Handle score input
   const handleScoreChange = (round, index, value, category, ranges) => {
     const [min, max] = ranges[category];
     let numericValue = Number(value);
@@ -77,11 +90,13 @@ function SecondRound() {
     }));
   };
 
+  // Calculate total for a team
   const calculateTotal = (teamId) => {
     const roundScores = scores[teamId]?.round2 || [];
     return roundScores.reduce((sum, val) => sum + (Number(val) || 0), 0);
   };
 
+  // Submit scores
   const handleSubmit = async () => {
     const teamId = teams[currentTeamIndex]._id;
 
@@ -116,6 +131,7 @@ function SecondRound() {
     }
   };
 
+  // Navigation
   const handleBack = () => {
     if (currentTeamIndex > 0) {
       setCurrentTeamIndex(currentTeamIndex - 1);
@@ -132,29 +148,38 @@ function SecondRound() {
     }
   };
 
+  // Loading UI
   if (teams.length === 0)
     return (
-      <div className='flex items-center justify-center h-screen bg-gray-900 text-white'>
-        <p className='text-lg animate-pulse'>Loading teams...</p>
+      <div className="flex items-center justify-center h-screen bg-gray-900 text-white">
+        <p className="text-lg animate-pulse">Loading teams...</p>
       </div>
     );
 
   const team = teams[currentTeamIndex];
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white flex items-center justify-center p-6'>
-      <div className='w-full max-w-4xl bg-gray-800/90 rounded-2xl shadow-2xl p-8 backdrop-blur'>
-        {/* 🔍 Search bar */}
-        <div className='relative w-full mb-6'>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white flex items-center justify-center p-6">
+      <div className="w-full max-w-4xl bg-gray-800/90 rounded-2xl shadow-2xl p-8 backdrop-blur">
+        {/* Back button */}
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center text-gray-300 hover:text-white mb-6"
+        >
+          <ArrowLeft className="mr-2 h-5 w-5" /> Home
+        </button>
+
+        {/* Search bar */}
+        <div className="relative w-full mb-6">
           <input
-            type='text'
-            placeholder='Search team by name...'
+            type="text"
+            placeholder="Search team by name..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className='w-full p-3 rounded-xl bg-gray-700 text-white focus:ring-2 focus:ring-purple-500 placeholder-gray-400'
+            className="w-full p-3 rounded-xl bg-gray-700 text-white focus:ring-2 focus:ring-purple-500 placeholder-gray-400"
           />
           {searchTerm && (
-            <ul className='absolute z-10 w-full bg-gray-800 border border-gray-700 rounded-lg mt-2 max-h-40 overflow-y-auto'>
+            <ul className="absolute z-10 w-full bg-gray-800 border border-gray-700 rounded-lg mt-2 max-h-40 overflow-y-auto">
               {teams
                 .filter((t) =>
                   t.teamName.toLowerCase().includes(searchTerm.toLowerCase())
@@ -169,7 +194,7 @@ function SecondRound() {
                       setCurrentTeamIndex(actualIndex);
                       setSearchTerm("");
                     }}
-                    className='p-2 cursor-pointer hover:bg-gray-700 transition'
+                    className="p-2 cursor-pointer hover:bg-gray-700 transition"
                   >
                     {t.teamName}
                   </li>
@@ -178,23 +203,23 @@ function SecondRound() {
               {teams.filter((t) =>
                 t.teamName.toLowerCase().includes(searchTerm.toLowerCase())
               ).length === 0 && (
-                <li className='p-2 text-gray-400'>No team found</li>
+                <li className="p-2 text-gray-400">No team found</li>
               )}
             </ul>
           )}
         </div>
 
-        {/* Team Name + Lead */}
-        <h1 className='text-4xl font-bold text-center mb-2 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500'>
+        {/* Team Info */}
+        <h1 className="text-4xl font-bold text-center mb-2 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
           {team.teamName}
         </h1>
-        <p className='text-center text-lg text-gray-300 mb-6'>
+        <p className="text-center text-lg text-gray-300 mb-6">
           Lead:{" "}
-          <span className='font-semibold text-white'>{team.lead?.name}</span>
+          <span className="font-semibold text-white">{team.lead?.name}</span>
         </p>
 
         {/* Round 2 scoring */}
-        <div className='space-y-5'>
+        <div className="space-y-5">
           {scores[team._id]?.round2.map((val, idx) => {
             const category = round2Categories[idx];
             const [min, max] = round2Ranges[category];
@@ -202,14 +227,14 @@ function SecondRound() {
 
             return (
               <div key={idx}>
-                <label className='block text-gray-300 mb-1 font-medium'>
+                <label className="block text-gray-300 mb-1 font-medium">
                   {category}{" "}
-                  <span className='text-gray-400'>
+                  <span className="text-gray-400">
                     (Range: {min}-{max})
                   </span>
                 </label>
                 <input
-                  type='number'
+                  type="number"
                   value={val}
                   onChange={(e) =>
                     handleScoreChange(
@@ -225,7 +250,7 @@ function SecondRound() {
                   }`}
                 />
                 {errorMsg && (
-                  <p className='text-red-400 text-sm mt-1'>{errorMsg}</p>
+                  <p className="text-red-400 text-sm mt-1">{errorMsg}</p>
                 )}
               </div>
             );
@@ -233,29 +258,23 @@ function SecondRound() {
         </div>
 
         {/* Total */}
-        <div className='mt-6 p-4 bg-gray-700 rounded-xl text-lg font-semibold text-center shadow-md'>
+        <div className="mt-6 p-4 bg-gray-700 rounded-xl text-lg font-semibold text-center shadow-md">
           Total Score: {calculateTotal(team._id)}
         </div>
 
         {/* Buttons */}
-        <div className='flex justify-between mt-8'>
-          <button
-            onClick={handleBack}
-            className='px-6 py-3 bg-gray-600 hover:bg-gray-700 rounded-xl shadow-lg font-semibold transition transform hover:scale-105'
-          >
-            ← Back
-          </button>
+        <div className="flex justify-between mt-8">
           <button
             onClick={handleSubmit}
-            className='px-6 py-3 bg-green-600 hover:bg-green-700 rounded-xl shadow-lg font-semibold transition transform hover:scale-105'
+            className="px-6 py-3 bg-green-600 hover:bg-green-700 rounded-xl shadow-lg font-semibold transition transform hover:scale-105"
           >
             Submit
           </button>
           <button
             onClick={handleNext}
-            className='px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-xl shadow-lg font-semibold transition transform hover:scale-105'
+            className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-xl shadow-lg font-semibold transition transform hover:scale-105"
           >
-            Next Team →
+            Next →
           </button>
         </div>
       </div>

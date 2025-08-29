@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { api } from "./api";
+import { ArrowLeft } from "lucide-react"; 
+import { useNavigate } from "react-router-dom";
 
 function FirstRound() {
+  const navigate = useNavigate();
   const [teams, setTeams] = useState([]);
   const [currentTeamIndex, setCurrentTeamIndex] = useState(0);
   const [scores, setScores] = useState({});
@@ -30,17 +33,25 @@ function FirstRound() {
 
         const initialScores = {};
         const initialErrors = {};
+
         data.forEach((team) => {
+          // Use existing scores if available, else default to ""
+          const existingRound1 = team.FirstReview && Array.isArray(team.FirstReview)
+            ? team.FirstReview
+            : Array(round1Categories.length).fill("");
+
           initialScores[team._id] = {
-            round1: Array(round1Categories.length).fill(""),
+            round1: existingRound1,
           };
           initialErrors[team._id] = {};
         });
+
         setScores(initialScores);
         setErrors(initialErrors);
       })
       .catch((err) => console.error("Error fetching teams:", err));
   }, []);
+
 
   const handleScoreChange = (round, index, value, category, ranges) => {
     const [min, max] = ranges[category];
@@ -93,17 +104,14 @@ function FirstRound() {
     const total = calculateTotal(teamId);
 
     try {
-      const res = await fetch(
-        `${api}/event/team/score/${teamId}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            FirstReview: teamScores,
-            FirstScore: total,
-          }),
-        }
-      );
+      const res = await fetch(`${api}/event/team/score/${teamId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          FirstReview: teamScores,
+          FirstScore: total,
+        }),
+      });
 
       if (res.ok) {
         alert(`Marks submitted for ${teams[currentTeamIndex].teamName}!`);
@@ -144,9 +152,19 @@ function FirstRound() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white flex items-center justify-center p-6">
-      <div className="w-full max-w-4xl bg-gray-800/90 rounded-2xl shadow-2xl p-8 backdrop-blur">
+      <div className="w-full max-w-4xl bg-gray-800/90 rounded-2xl shadow-2xl p-8 backdrop-blur relative">
+        
+        {/* 🔙 Back Button (top-left, absolute inside card) */}
+        <button
+          onClick={() => navigate("/")}
+          className="absolute top-4 left-4 flex items-center gap-2 px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-xl shadow-md transition"
+        >
+          <ArrowLeft size={20} />
+          <span className="font-medium">Home</span>
+        </button>
+
         {/* Search bar */}
-        <div className="relative w-full mb-6">
+        <div className="relative w-full mb-6 mt-12">
           <input
             type="text"
             placeholder="Search team by name..."
@@ -174,7 +192,6 @@ function FirstRound() {
                   >
                     {t.teamName}
                   </li>
-                  
                 ))}
 
               {teams.filter((t) =>
@@ -191,7 +208,8 @@ function FirstRound() {
           {team.teamName}
         </h1>
         <p className="text-center text-lg text-gray-300 mb-6">
-          Team Lead: <span className="font-semibold text-white">{team.lead?.name}</span>
+          Team Lead:{" "}
+          <span className="font-semibold text-white">{team.lead?.name}</span>
         </p>
 
         {/* Round 1 scoring */}
@@ -204,7 +222,8 @@ function FirstRound() {
             return (
               <div key={idx}>
                 <label className="block text-gray-300 mb-1 font-medium">
-                  {category} <span className="text-gray-400">(Range: {min}-{max})</span>
+                  {category}{" "}
+                  <span className="text-gray-400">(Range: {min}-{max})</span>
                 </label>
                 <input
                   type="number"
@@ -237,12 +256,6 @@ function FirstRound() {
 
         {/* Buttons */}
         <div className="flex justify-between mt-8">
-          <button
-            onClick={handleBack}
-            className='px-6 py-3 bg-gray-600 hover:bg-gray-700 rounded-xl shadow-lg font-semibold transition transform hover:scale-105'
-          >
-            ← Back
-          </button>
           <button
             onClick={handleSubmit}
             className="px-6 py-3 bg-green-600 hover:bg-green-700 rounded-xl shadow-lg font-semibold transition transform hover:scale-105"
