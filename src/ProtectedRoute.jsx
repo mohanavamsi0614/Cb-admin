@@ -15,7 +15,7 @@ const ProtectedRoute = ({ element, allowedRoles }) => {
   }, [allowedRoles]);
 
   const passwordMap = {
-    cbkare2025: 'admin',
+    cbkaree2025: 'admin',
     cborg2025: 'org',
     cbguests2025: 'guest',
   };
