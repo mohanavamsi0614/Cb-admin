@@ -5,10 +5,13 @@ const socket=io(api);
 function GameCard({team}){
     const [markedScore, setMarkedScore] = useState();
     console.log(team)
-    const handlemarks=()=>{
-        console.log("doihqoi")
-        socket.emit("leaderboard", { teamname: team.teamName, HuntScore: markedScore });
-    }
+
+    const handlemarks = () => {
+    socket.emit("leaderboard", { teamname: team.teamName, HuntScore: Number(markedScore) });
+    alert(`Team ${team.teamName} updated with score: ${markedScore}`);
+    setMarkedScore("");
+    window.location.reload();
+    };
 
     return(
         <div className="max-w-md mx-auto mt-12 p-8 bg-gradient-to-br from-blue-100 via-cyan-50 to-indigo-100 rounded-3xl shadow-2xl border border-blue-300">
