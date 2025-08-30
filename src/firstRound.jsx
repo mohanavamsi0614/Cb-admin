@@ -229,7 +229,7 @@ function FirstRound() {
             <span className="text-white">{team.lead?.name || "N/A"}</span>
           </span>
           <span className="flex flex-col items-center">
-            Problem Statement:
+            <p className="font-bold text-center mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">{team.ProblemStatement}</p>
             <span className="text-white max-w-2xl text-center mt-1 px-3 py-2 rounded-lg bg-gray-800/50 overflow-y-auto max-h-40">
               {problemDescription|| "No problem statement provided."}
             </span>

@@ -10,6 +10,7 @@ function SecondRound() {
   const [scores, setScores] = useState({});
   const [errors, setErrors] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
+  const [problemDescription, setProblemDescription] = useState("");
 
   const round2Categories = [
     "Implementation & Functionality",
@@ -57,6 +58,21 @@ function SecondRound() {
       })
       .catch((err) => console.error("Error fetching teams:", err));
     }, []);
+
+    useEffect(() => {
+        if (teams.length > 0) {
+          const teamId = teams[currentTeamIndex]._id;
+          fetch(`${api}/event/problems/team/${teamId}`)
+            .then((res) => res.json())
+            .then((data) => {
+              setProblemDescription(data?.problem?.description || "No description available.");
+            })
+            .catch((err) => {
+              console.error("Error fetching problem description:", err);
+              setProblemDescription("Failed to load description.");
+            });
+        }
+    }, [currentTeamIndex, teams]);
 
   // Handle score input
   const handleScoreChange = (round, index, value, category, ranges) => {
@@ -213,9 +229,17 @@ function SecondRound() {
         <h1 className="text-4xl font-bold text-center mb-2 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
           {team.teamName}
         </h1>
-        <p className="text-center text-lg text-gray-300 mb-6">
-          Lead:{" "}
-          <span className="font-semibold text-white">{team.lead?.name}</span>
+        <p className="text-center text-lg text-gray-300 mb-8 grid gap-3">
+          <span>
+            Team Lead:{" "}
+            <span className="text-white">{team.lead?.name || "N/A"}</span>
+          </span>
+          <span className="flex flex-col items-center">
+            <p className="font-bold text-center mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">{team.ProblemStatement}</p>
+            <span className="text-white max-w-2xl text-center mt-1 px-3 py-2 rounded-lg bg-gray-800/50 overflow-y-auto max-h-40">
+              {problemDescription|| "No problem statement provided."}
+            </span>
+          </span>
         </p>
 
         {/* Round 2 scoring */}
