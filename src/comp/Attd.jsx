@@ -11,8 +11,8 @@ function Attd({ team }) {
     "border rounded-xl p-4 bg-white border-slate-700 shadow-md";
   const buttonClass =
     "p-3 px-6 font-semibold rounded-lg shadow-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900";
-  const attdLabels = ["First", "Second", "Third", "Fourth"];
-    const [attendances, setAttendances] = useState(["firstAttd", "secondAttd", "thirdAttd", "fourthAttd"]);
+  const attdLabels = ["First", "Second", "Third", "Fourth", "Fifth", "Sixth"];
+    const [attendances, setAttendances] = useState(["firstAttd", "secondAttd", "thirdAttd", "fourthAttd", "fifthAttd", "sixthAttd"]);
 
   const [attendance, setAttendance] = useState({
     id: team._id,
@@ -57,8 +57,6 @@ function Attd({ team }) {
     });
 
   },[])
-
-
  
   return (
     <div className=" border border-black p-6 rounded-2xl ">
@@ -74,7 +72,7 @@ function Attd({ team }) {
             </b>
 
             <div className="grid grid-cols-4 gap-4 items-start m-4">
-              {[team.lead.firstAttdImg, team.lead.secondAttdImg, team.lead.thirdAttdImg, team.lead.fourthAttdImg].map(
+              {[team.lead.firstAttdImg, team.lead.secondAttdImg, team.lead.thirdAttdImg, team.lead.fourthAttdImg, team.lead.fifthAttdImg, team.lead.sixthAttdImg].map(
                 (img, idx) => (
                   <div
                     key={attdLabels[idx]}
@@ -153,7 +151,7 @@ function Attd({ team }) {
               </b>
 
               <div className="grid grid-cols-4 gap-4 items-start m-4">
-                {[member.firstAttdImg, member.secondAttdImg, member.thirdAttdImg, member.fourthAttdImg].map(
+                {[member.firstAttdImg, member.secondAttdImg, member.thirdAttdImg, member.fourthAttdImg, member.fifthAttdImg, member.sixthAttdImg].map(
                   (img, idx) => (
                     <div
                       key={attdLabels[idx]}
