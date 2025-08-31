@@ -241,6 +241,20 @@ function SecondRound() {
             </span>
           </span>
         </p>
+        
+        {/* First Review Score (Read-only) */}
+        <div className="mt-6">
+          <label className="block text-gray-300 mb-1 font-medium">
+            First Review Score
+          </label>
+          <input
+            type="number"
+            value={team.FirstReviewScore || 0}
+            readOnly
+            disabled
+            className="w-full mb-2 p-3 rounded-lg bg-gray-600 text-white cursor-not-allowed"
+          />
+        </div>
 
         {/* Round 2 scoring */}
         <div className="space-y-5">
