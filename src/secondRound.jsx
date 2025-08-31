@@ -22,12 +22,12 @@ function SecondRound() {
   ];
 
   const round2Ranges = {
-    "Implementation & Functionality": [0, 20],
-    "Innovation & Creative": [0, 15],
-    "User Experience & Design": [0, 15],
-    "Impact & Practicality": [0, 15],
-    "Presentation & Communication": [0, 10],
-    "Completion & Effort": [0, 10],
+    "Implementation & Functionality": [0, 10],
+    "Innovation & Creative": [0, 10],
+    "User Experience & Design": [0, 10],
+    "Impact & Practicality": [0, 10],
+    "Presentation & Communication": [0, 5],
+    "Completion & Effort": [0, 5],
   };
 
   // Fetch Teams
