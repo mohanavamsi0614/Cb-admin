@@ -45,7 +45,7 @@ function SecondRound() {
       const existingRound2 =
       team.SecondReview && Array.isArray(team.SecondReview)
       ? team.SecondReview
-      : Array(round2Categories.length).fill(0);
+      : Array(round2Categories.length).fill("");
 
 
       initialScores[team._id] = { round2: existingRound2 };
